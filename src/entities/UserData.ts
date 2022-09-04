@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import MapLevel from "../world/MapLevel";
 
 @Entity()
 export default class UserData {
@@ -8,9 +9,12 @@ export default class UserData {
     @Column({unique: true})
     username!: string;
 
-    @Column()
+    @Column({default: JSON.stringify({x: 0, y: 0})})
     position!: string;
     
-    @Column()
+    @Column({unique: true})
     hash!: string;
+
+    @Column({default: MapLevel.Littleroot})
+    mapid!: number;
 }

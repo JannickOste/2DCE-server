@@ -7,12 +7,13 @@ import * as bcrypt from "bcrypt";
 import ServerPacket from "./net/enums/ServerPacket";
 import PacketHandler from "./net/PacketHandler";
 import { compareSync } from "bcrypt";
+import TilemapManager from "./world/TilemapManager";
 
 (async() => {
     await AppDataSource.initialize();
     await PacketHandler.Init();
+    await TilemapManager.Init();
 
-    console.log();
     const server: Server = new Server();
 
     server.Start();

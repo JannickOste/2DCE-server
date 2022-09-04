@@ -1,7 +1,5 @@
 import * as ws from "ws";
 import Client  from "./Client";
-import ServerPacket from "./enums/ServerPacket";
-import PacketHandler from "./PacketHandler";
 
 export default class Server 
 {
@@ -18,12 +16,20 @@ export default class Server
 
         Server.clients = Object.fromEntries(Array.from(Array(Server.MAX_CLIENTS).keys()).map(i => [i+1, null]));
         Server.websocket.on("connection", (socket: ws.WebSocket) => {
+            socket.onopen
+            if(Object.values(Server.clients).some((c: Client | null) => c !== null && c.match(socket)))
+                return;
+
             console.log(`Client connection attempt: ${socket.url}`);
             for(let i = 1; i <= Server.MAX_CLIENTS; i++)
             {
                 if(Server.clients[i] !== null) continue;
                 
-                socket.on("close", () => Server.clients[i] = null);
+                socket.on("close", () => {
+                    Server.clients[i] = null;
+                    console.log("disconnect");
+                });
+                
                 Server.clients[i] = new Client(i, socket);
                 return;
             }
@@ -33,7 +39,7 @@ export default class Server
         
 
         console.log(`Websocket listening on port: ${Server.PORT}`);
-        setInterval(this.Tick, 1000/2)
+        setInterval(this.Tick, 1000/60)
     }
     
     
@@ -42,12 +48,8 @@ export default class Server
         for(let client of Object.values(Server.clients))
         {
             if(client)
-                PacketHandler.SendPacket(client, {
-                    id: ServerPacket.SERVER_HELLO, 
-                    args: {
-                        i: "hello world"
-                    }
-                })
+            {
+            }
         }
     }
 } 

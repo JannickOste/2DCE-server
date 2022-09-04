@@ -22,6 +22,10 @@ export default class Client
         return this.socket.OPEN;
     }
 
+    public get loggedIn(){
+        return this.userData !== undefined;
+    }
+
     constructor(id: number, socket: ws.WebSocket)
     {
         this._id = id;
@@ -42,4 +46,6 @@ export default class Client
 
     Send        = (msg: string)    => this.socket.send(msg);
     Disconnect  = (errorCode: ErrorCode = ErrorCode.NONE) => this.socket.close();
+
+    match = (socket: ws.WebSocket) => this.socket === socket;
 }
