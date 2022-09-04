@@ -1,0 +1,28 @@
+{
+  "name": "2dgame_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/glob": "^8.0.0",
+    "@types/node": "^18.7.14",
+    "@types/ws": "^8.5.3",
+    "glob": "^8.0.3",
+    "ws": "^8.8.1"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "bcrypt": "^5.0.1",
+    "mongodb": "^3.7.3",
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.0.11",
+    "ts-transformer-keys": "^0.4.3",
+    "typeorm": "^0.3.9"
+  }
+}
