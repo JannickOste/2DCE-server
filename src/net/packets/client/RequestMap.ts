@@ -23,7 +23,6 @@ export default class Authenticate implements IPacketHandler
         const map = TilemapManager.GetMap(packet.args.mapid);
         if(map)
         {
-            console.dir(map.toPacket());
             PacketHandler.SendPacket(client, map.toPacket());
         }
         else client.Disconnect(ErrorCode.INVALID_PACKET);

@@ -40,7 +40,6 @@ export default class PacketHandler
         // Convert bytes to utf-8 & parse using JSON to object.
         const packet = JSON.parse(Buffer.from(buffer).toString("utf-8"));
 
-        console.dir(packet);
         await PacketHandler.HandleClientPacket(client, packet);
     }
 
@@ -63,7 +62,6 @@ export default class PacketHandler
         if(handler.process)
         {
             const requiredFields: string[] = Reflect.getMetadata(RequiredArguments.prototype.constructor.name, handler, "process");
-            console.dir(requiredFields);
             if(requiredFields === undefined || requiredFields.every(s => Object.keys(packet.args).includes(s)))
             {
                 await handler.process(client, packet);
@@ -89,7 +87,6 @@ export default class PacketHandler
      */
     static SendPacket = (client: Client, packet: ISocketPacket) => 
     {
-        console.log(JSON.stringify(packet));
         client.Send(JSON.stringify(packet));
     }
 

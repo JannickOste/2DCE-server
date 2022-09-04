@@ -1,5 +1,7 @@
 import * as ws from "ws";
 import Client  from "./Client";
+import ServerPacket from "./enums/ServerPacket";
+import PacketHandler from "./PacketHandler";
 
 export default class Server 
 {
@@ -45,11 +47,36 @@ export default class Server
     
     private Tick() 
     {
-        for(let client of Object.values(Server.clients))
+        const activeClients = Object.values(Server.clients).filter(i => i !== null);
+
+        for(let client of activeClients)
         {
-            if(client)
+            if(!client) continue;
+
+            // Send other players
+            for(let otherClient of activeClients)
             {
+                if(otherClient?.id != client?.id)
+                    PacketHandler.SendPacket(client, {
+                        id: ServerPacket.SET_PLAYER,
+                        args: {
+                            pid: otherClient?.id,
+                            x: otherClient?.position.x,
+                            y: otherClient?.position.y
+                        }
+                    })
             }
+            
+            // Send local
+            PacketHandler.SendPacket(client, {
+                id: ServerPacket.SET_PLAYER,
+                args: {
+                    pid: client.id,
+                    x: client.position.x,
+                    y: client.position.y
+                }
+            });
+
         }
     }
 } 

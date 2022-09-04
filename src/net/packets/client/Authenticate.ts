@@ -9,6 +9,7 @@ import { compareSync } from "bcrypt";
 import ErrorCode from "../../../ErrorCode";
 import RequiredArguments from "../../RequiredArguments";
 import PacketHandler from "../../PacketHandler";
+import ServerPacket from "../../enums/ServerPacket";
 
 @Reflect.metadata(ClientPacket, ClientPacket.AUTHENTICATE)
 export default class Authenticate implements IPacketHandler
@@ -35,6 +36,13 @@ export default class Authenticate implements IPacketHandler
         }
 
         client.userData = userData;
+        PacketHandler.SendPacket(client, {
+            id: ServerPacket.SET_CLIENT_INFO,
+            args: {
+                pid: client.id
+            }
+        })
+        
         PacketHandler.HandleClientPacket(client, {
             id: ClientPacket.REQUEST_MAP,
             args: {

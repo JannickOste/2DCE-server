@@ -14,7 +14,6 @@ export default class Tilemap
 
     constructor(bg: string, fg: ITile[], collider: ITile[]) 
     {
-        console.dir(fg);
         this.bg = Buffer.from(bg).toString("utf-8");
         this.fg = fg;
         this.collider = collider;
