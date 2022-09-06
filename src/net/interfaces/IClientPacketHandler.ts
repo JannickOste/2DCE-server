@@ -3,7 +3,7 @@ import { ISocketPacket } from "./ISocketPacket"
 
 interface IPacketHandler
 {
-    process: (client: Client, packet: ISocketPacket) => Promise<void>;
+    process: (client: Client, packet?: ISocketPacket) => Promise<void>;
 }
 
 export const isIPacketHandler = (obj: any) =>

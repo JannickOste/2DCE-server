@@ -79,6 +79,27 @@ export default class PacketHandler
         }
     }
 
+    static async HandleServerPacket(client: Client, packet: ServerPacket)
+    {
+        
+        const handler = this.serverPacketHandlers[packet];
+        if(!handler)
+        {
+            console.log(`Attempting to send packet ${ServerPacket[packet]} with no handler to client #${client.id}`);
+            return;
+        }
+
+        if(handler.process)
+        {
+            await handler.process(client);
+        }
+        else 
+        {
+            console.log(`No processing function found on handler object for packet #${packet}`);
+            delete(PacketHandler.clientPacketHandlers[packet]);
+        }
+    }
+
     /**
      * Send server packet to client.
      * 

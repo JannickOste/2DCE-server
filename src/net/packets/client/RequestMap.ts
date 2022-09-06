@@ -16,11 +16,11 @@ export default class Authenticate implements IPacketHandler
 {
     
     @RequiredArguments("mapid")
-    process = async(client: Client, packet: ISocketPacket) => 
+    process = async(client: Client, packet?: ISocketPacket) => 
     {
         console.log(`Received authentication request from client #${client.id}`)
         
-        const map = TilemapManager.GetMap(packet.args.mapid);
+        const map = packet ? TilemapManager.GetMap(packet.args.mapid) : null;
         if(map)
         {
             PacketHandler.SendPacket(client, map.toPacket());

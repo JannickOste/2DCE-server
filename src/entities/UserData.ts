@@ -17,4 +17,4 @@ export default class UserData {
 
     @Column({default: MapLevel.Littleroot})
     mapid!: number;
-}
+}   

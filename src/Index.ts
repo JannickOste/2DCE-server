@@ -9,7 +9,9 @@ import PacketHandler from "./net/PacketHandler";
 import { compareSync } from "bcrypt";
 import TilemapManager from "./world/TilemapManager";
 
+
 (async() => {
+
     await AppDataSource.initialize();
     await PacketHandler.Init();
     await TilemapManager.Init();

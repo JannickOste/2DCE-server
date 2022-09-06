@@ -1,4 +1,6 @@
 import * as ws from "ws";
+import { Player } from "../entities/characters/Player";
+import GameEntity from "../entities/GameEntity";
 import Client  from "./Client";
 import ServerPacket from "./enums/ServerPacket";
 import PacketHandler from "./PacketHandler";
@@ -8,6 +10,7 @@ export default class Server
     private static readonly PORT = 8080;
     private static readonly MAX_CLIENTS = 2;
     private static clients: {[key: number]: Client | null} = {}
+    public static get Clients(): {[key: number]: Client | null} { return this.clients}
     private static websocket: any;
 
     public Start(): void
@@ -27,7 +30,8 @@ export default class Server
             {
                 if(Server.clients[i] !== null) continue;
                 
-                socket.on("close", () => {
+                socket.on("close", async() => {
+                    await Server.clients[i]?.Save();
                     Server.clients[i] = null;
                     console.log("disconnect");
                 });
@@ -43,40 +47,59 @@ export default class Server
         console.log(`Websocket listening on port: ${Server.PORT}`);
         setInterval(this.Tick, 1000/60)
     }
-    
-    
-    private Tick() 
+
+    private Tick()
     {
-        const activeClients = Object.values(Server.clients).filter(i => i !== null);
-
-        for(let client of activeClients)
+        const activeClients: Client[] = Object.values(Server.clients).filter(i => i !== null && i.loggedIn) as Client[];
+        const groupBy = (set: any, param: (obj: any) => any) => 
         {
-            if(!client) continue;
-
-            // Send other players
-            for(let otherClient of activeClients)
+            let output: {[key: string | number]: any[]} = {}
+            for(let i of set)
             {
-                if(otherClient?.id != client?.id)
-                    PacketHandler.SendPacket(client, {
-                        id: ServerPacket.SET_PLAYER,
-                        args: {
-                            pid: otherClient?.id,
-                            x: otherClient?.position.x,
-                            y: otherClient?.position.y
-                        }
-                    })
+                const value = param(i);
+                if(output[value] === undefined)
+                    output[value] = [i];
+                else output[value].push(i);
             }
-            
-            // Send local
-            PacketHandler.SendPacket(client, {
-                id: ServerPacket.SET_PLAYER,
-                args: {
-                    pid: client.id,
-                    x: client.position.x,
-                    y: client.position.y
-                }
-            });
 
+            return output;
+        }
+
+        for(let entity of GameEntity.Entities.concat(Player.Players))
+            if(entity)
+                entity.Update();
+
+        const mappedClients = groupBy(activeClients, (i: Client) => i.player.map);
+        for(let [mapId, clients] of Object.entries(mappedClients))
+        {
+            for(let client of clients)
+            {
+                // Send other players
+                for(let otherClient of mappedClients[mapId])
+                {
+                    if(otherClient.id != client.id)
+                        PacketHandler.SendPacket(client, {
+                            id: ServerPacket.SET_PLAYER,
+                            args: {
+                                pid: otherClient?.id,
+                                x: otherClient?.player.position.x,
+                                y: otherClient?.player.position.y
+                            }
+                        })
+                } 
+
+                    
+                // Send local
+                PacketHandler.SendPacket(client, {
+                    id: ServerPacket.SET_PLAYER,
+                    args: {
+                        pid: client.id,
+                        x: client.player.position.x,
+                        y: client.player.position.y
+                    }
+                });
+            }
         }
     }
+    
 } 

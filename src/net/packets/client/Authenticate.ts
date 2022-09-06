@@ -10,6 +10,8 @@ import ErrorCode from "../../../ErrorCode";
 import RequiredArguments from "../../RequiredArguments";
 import PacketHandler from "../../PacketHandler";
 import ServerPacket from "../../enums/ServerPacket";
+import { Player } from "../../../entities/characters/Player";
+
 
 @Reflect.metadata(ClientPacket, ClientPacket.AUTHENTICATE)
 export default class Authenticate implements IPacketHandler
@@ -24,32 +26,31 @@ export default class Authenticate implements IPacketHandler
     }
 
     @RequiredArguments("username", "password")
-    process = async(client: Client, packet: ISocketPacket) => 
+    process = async(client: Client, packet?: ISocketPacket) => 
     {
         console.log(`Received authentication request from client #${client.id}`)
- 
-        const userData: UserData | null = await this.Verify(packet.args.username, packet.args.password);
-        if(!userData)
+        
+        if(packet)
         {
-            console.log("Invalid credentials, revoking connection request");
-            return client.Disconnect(ErrorCode.INVALID_CREDENTIALS);
-        }
+            const userData: UserData | null = await this.Verify(packet.args.username, packet.args.password);
+            if(!userData)
+            {
+                console.log("Invalid credentials, revoking connection request");
+                return client.Disconnect(ErrorCode.INVALID_CREDENTIALS);
+            }
 
-        client.userData = userData;
-        PacketHandler.SendPacket(client, {
-            id: ServerPacket.SET_CLIENT_INFO,
-            args: {
-                pid: client.id
+            try
+            {
+
+                client.player = new Player(userData);
             }
-        })
-        
-        PacketHandler.HandleClientPacket(client, {
-            id: ClientPacket.REQUEST_MAP,
-            args: {
-                mapid: client.userData.mapid
+            catch(e)
+            {
+                console.log(e);
             }
-        })
-        
+            PacketHandler.HandleServerPacket(client, ServerPacket.SET_CLIENT_INFO);
+
+        }
         // create user session and register in user db
 
     }
