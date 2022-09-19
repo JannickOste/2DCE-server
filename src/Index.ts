@@ -7,7 +7,8 @@ import * as bcrypt from "bcrypt";
 import ServerPacket from "./net/enums/ServerPacket";
 import PacketHandler from "./net/PacketHandler";
 import { compareSync } from "bcrypt";
-import TilemapManager from "./world/TilemapManager";
+import TilemapManager from "./world/maps/TilemapManager";
+import WorldEventManager from "./world/events/WorldEventManager";
 
 
 (async() => {
@@ -15,6 +16,7 @@ import TilemapManager from "./world/TilemapManager";
     await AppDataSource.initialize();
     await PacketHandler.Init();
     await TilemapManager.Init();
+    await WorldEventManager.Init();
 
     const server: Server = new Server();
 

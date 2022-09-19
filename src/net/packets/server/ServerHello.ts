@@ -2,7 +2,7 @@ import "reflect-metadata";
 import Client from "../../Client";
 import ClientPacket from "../../enums/ClientPacket";
 import ServerPacket from "../../enums/ServerPacket";
-import IPacketHandler from "../../interfaces/IClientPacketHandler";
+import IPacketHandler from "../../interfaces/IPacketHandler";
 import PacketHandler from "../../PacketHandler";
 
 @Reflect.metadata(ServerPacket, ServerPacket.SET_CLIENT_INFO)

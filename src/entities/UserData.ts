@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
-import MapLevel from "../world/MapLevel";
+import MapLevel from "../world/maps/MapLevel";
 
 @Entity()
 export default class UserData {

@@ -1,8 +1,9 @@
-import { cp, Dirent } from "fs";
+import { Dirent } from "fs";
 import path from "path";
-import { MAPS_PATH } from "../Globals";
+import { MAPS_PATH } from "../../Globals";
 import MapLevel from "./MapLevel";
 import Tilemap from "./Tilemap";
+
 
 export default class TilemapManager
 {
@@ -17,13 +18,14 @@ export default class TilemapManager
             
             const id = Number.parseInt(fileInfoRoot.name.split(".")[0]);
             if(MapLevel[id] === undefined) continue;
-
+            
             const dirFiles = fs.readdirSync(path.join(MAPS_PATH, fileInfoRoot.name));
-            if(["bg.csv", "fg.json"].every(s => dirFiles.includes(s)))
+            if(["tilemap.json"].every(s => dirFiles.includes(s)))
             {
+                const tilemapData = JSON.parse(fs.readFileSync(path.join(MAPS_PATH, fileInfoRoot.name, "tilemap.json")))
                 this.tilemaps[id] = new Tilemap(
-                    fs.readFileSync(path.join(MAPS_PATH, fileInfoRoot.name, "bg.csv")),
-                    JSON.parse(fs.readFileSync(path.join(MAPS_PATH, fileInfoRoot.name, "fg.json"))),
+                    tilemapData["bg"],
+                    tilemapData["fgLayers"],
                     []
                 )
             }

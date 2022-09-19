@@ -50,7 +50,6 @@ export default class Server
 
     private Tick()
     {
-        const activeClients: Client[] = Object.values(Server.clients).filter(i => i !== null && i.loggedIn) as Client[];
         const groupBy = (set: any, param: (obj: any) => any) => 
         {
             let output: {[key: string | number]: any[]} = {}
@@ -65,10 +64,12 @@ export default class Server
             return output;
         }
 
+        /** Update entities */
         for(let entity of GameEntity.Entities.concat(Player.Players))
             if(entity)
                 entity.Update();
 
+        const activeClients: Client[] = Object.values(Server.clients).filter(i => i !== null && i.loggedIn) as Client[];
         const mappedClients = groupBy(activeClients, (i: Client) => i.player.map);
         for(let [mapId, clients] of Object.entries(mappedClients))
         {
@@ -76,28 +77,9 @@ export default class Server
             {
                 // Send other players
                 for(let otherClient of mappedClients[mapId])
-                {
-                    if(otherClient.id != client.id)
-                        PacketHandler.SendPacket(client, {
-                            id: ServerPacket.SET_PLAYER,
-                            args: {
-                                pid: otherClient?.id,
-                                x: otherClient?.player.position.x,
-                                y: otherClient?.player.position.y
-                            }
-                        })
-                } 
-
+                    PacketHandler.HandleServerPacket(client, ServerPacket.SET_PLAYER, otherClient);
                     
-                // Send local
-                PacketHandler.SendPacket(client, {
-                    id: ServerPacket.SET_PLAYER,
-                    args: {
-                        pid: client.id,
-                        x: client.player.position.x,
-                        y: client.player.position.y
-                    }
-                });
+                PacketHandler.HandleServerPacket(client, ServerPacket.SET_PLAYER, client);
             }
         }
     }

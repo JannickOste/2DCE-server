@@ -1,4 +1,4 @@
-import ServerPacket from "../net/enums/ServerPacket";
+import ServerPacket from "../../net/enums/ServerPacket";
 
 interface ITile 
 {
@@ -6,6 +6,7 @@ interface ITile
     y: number,
     id: number
 }
+
 export default class Tilemap 
 {
     private bg: string = "";
@@ -28,7 +29,10 @@ export default class Tilemap
         this.collider = collider;
         this.rows = this.bg.split("\n").length;
         this.columns = this.bg.split("\n")[0].split(";").length;
+        this.collider = collider;
     }
+
+    tileAccessible = (x: number, y: number) => x < this.Columns && y < this.Rows && (this.collider.find(i => i.x == x && i.y == y) === undefined);
 
     toPacket()
     {

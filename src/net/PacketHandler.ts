@@ -3,7 +3,7 @@ import { ISocketPacket } from "./interfaces/ISocketPacket";
 import {sync as globSync} from "glob";
 import path from "path";
 import ClientPacket from "./enums/ClientPacket";
-import IPacketHandler from "./interfaces/IClientPacketHandler";
+import IPacketHandler from "./interfaces/IPacketHandler";
 import ServerPacket from "./enums/ServerPacket";
 import "reflect-metadata";
 import RequiredArguments from "./RequiredArguments";
@@ -50,7 +50,7 @@ export default class PacketHandler
      * @param packet 
      * @returns 
      */
-    static HandleClientPacket = async(client: Client, packet: ISocketPacket) => 
+    static HandleClientPacket = async(client: Client, packet: ISocketPacket, ...args: any[]) => 
     {
         const handler = this.clientPacketHandlers[packet.id];
         if(!handler)
@@ -64,7 +64,7 @@ export default class PacketHandler
             const requiredFields: string[] = Reflect.getMetadata(RequiredArguments.prototype.constructor.name, handler, "process");
             if(requiredFields === undefined || requiredFields.every(s => Object.keys(packet.args).includes(s)))
             {
-                await handler.process(client, packet);
+                await handler.process(client, packet, args);
             } 
             else 
             {
@@ -79,7 +79,7 @@ export default class PacketHandler
         }
     }
 
-    static async HandleServerPacket(client: Client, packet: ServerPacket)
+    static async HandleServerPacket(client: Client, packet: ServerPacket, ... args: any[])
     {
         
         const handler = this.serverPacketHandlers[packet];
@@ -91,7 +91,7 @@ export default class PacketHandler
 
         if(handler.process)
         {
-            await handler.process(client);
+            await handler.process(client, undefined, args);
         }
         else 
         {
@@ -106,9 +106,5 @@ export default class PacketHandler
      * @param client 
      * @param packet 
      */
-    static SendPacket = (client: Client, packet: ISocketPacket) => 
-    {
-        client.Send(JSON.stringify(packet));
-    }
-
+    static SendPacket = (client: Client, packet: ISocketPacket) =>  client.Send(JSON.stringify(packet));
 }

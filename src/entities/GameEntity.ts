@@ -1,4 +1,4 @@
-import MapLevel from "../world/MapLevel";
+import MapLevel from "../world/maps/MapLevel";
 import { IPosition } from "./IPosition";
 
 export default abstract class GameEntity 

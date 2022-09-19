@@ -3,7 +3,7 @@ import { AppDataSource } from "../../../AppDataSource";
 import UserData from "../../../entities/UserData";
 import Client from "../../Client";
 import ClientPacket from "../../enums/ClientPacket";
-import IPacketHandler from "../../interfaces/IClientPacketHandler";
+import IPacketHandler from "../../interfaces/IPacketHandler";
 import { ISocketPacket } from "../../interfaces/ISocketPacket";
 import { compareSync } from "bcrypt";
 import ErrorCode from "../../../ErrorCode";
